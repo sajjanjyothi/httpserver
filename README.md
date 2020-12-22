@@ -1,7 +1,9 @@
 This is an asynchronouse webserver using async package in cpp
 
-This server can be compiled as
+Compilation
+================
+make clean; make 
 
-g++ -std=c++17 -o server server.cpp http_server.cpp -lpthread
-
-Makefile creation in progress
+Dependency
+===========
+pthread library

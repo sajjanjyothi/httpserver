@@ -1,5 +1,5 @@
 #pragma once
-#include <strstream>
+#include<sstream>
 #include <iostream>
 class HttpResponse
 {
@@ -7,9 +7,9 @@ class HttpResponse
         explicit HttpResponse(){}
         int write_response(std::string response, std::string response_code)
         {
-            std::ostrstream response_str;
+            std::stringstream  response_str;
             response_str << response_code << "\n" << response << "\n";
-            return write(_sock_fd,response_str.str(),strlen(response_str.str()));
+            return write(_sock_fd,response_str.str().c_str(),response_str.str().length());
             return 0;
         }
         void set_client_socket(int sockfd)
