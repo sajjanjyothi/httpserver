@@ -32,6 +32,10 @@ int HttpServer::run_for_ever()
     int addrlen = sizeof(address); 
     int client_socket;
 
+    if( _routes.empty() )
+    {
+        throw HttpException("Routes are empty");
+    }
     if (listen(_sock_fd, MAX_LISTEN_QUEUE) < 0)
     { 
         throw HttpException("listen failed");
