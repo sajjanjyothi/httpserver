@@ -7,9 +7,11 @@ class HttpResponse
         explicit HttpResponse(){}
         int write_response(std::string response, std::string response_code)
         {
-            std::stringstream  response_str;
-            response_str << response_code << "\n" << response << "\n";
-            return write(_sock_fd,response_str.str().c_str(),response_str.str().length());
+            std::stringstream  response_str{};
+            response_str << "HTTP/1.1 "<< response_code <<"\r\n"<< response;
+
+            write(_sock_fd,response_str.str().c_str(),response_str.str().length());
+            //std::cout << "Return string " <<  response_str.str() << std::endl;
             return 0;
         }
         void set_client_socket(int sockfd)

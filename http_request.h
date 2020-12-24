@@ -1,18 +1,21 @@
 #pragma once
 #include <string>
+
+typedef std::map<std::string, std::string> REQ_DATA;
+
 class HttpRequest
 {
     public:
         explicit HttpRequest(){}
-        std::string get_request_data()
+        REQ_DATA get_request_data()
         {
             return _request_data;
         }
 
-        void set_request_data(std::string &data)
+        void set_request_data(REQ_DATA &data)
         {
             _request_data = data;
         }
     private:
-        std::string _request_data;
+        REQ_DATA _request_data;
 };

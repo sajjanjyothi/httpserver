@@ -9,6 +9,7 @@
 #include <netdb.h>
 #include <arpa/inet.h>
 #include <cstring>
+#include <string>
 #include <iostream>
 #include <map>
 #include <future>
@@ -19,9 +20,11 @@
 #include "http_request.h"
 #include "http_response.h"
 
+
 #define MAX_LISTEN_QUEUE 50
 
 typedef std::map<std::string,std::tuple<std::string ,void(*)(HttpRequest &request,HttpResponse &response)>> ROUTE_MAP;
+typedef std::map<std::string,std::string> REQ_DATA;
 
 class HttpServer
 {
@@ -39,6 +42,7 @@ class HttpServer
             char buffer[1024] = {0};
 
             read(clientsocket, buffer, sizeof(buffer));
+            //std::cout << buffer << std::endl;
             process_callback(buffer,clientsocket );
             close(clientsocket);
             return 0;
@@ -68,13 +72,40 @@ private:
 
         if( !actions.empty() )
         {
-            std::istringstream stream(actions.at(0));
-            std::string method, url;
+            std::istringstream          stream(actions.at(0));
+            std::string                 method, url;
+            REQ_DATA                    request_data;
+            std::string                 data;
+
             stream>>method>>url;
 
-            auto payload = actions[actions.size()-1];
+            std::cout << url;
+            if (int pos; (pos = url.find("?")) != std::string::npos)
+            {
+                data = url.substr(pos+1);
+                url = url.substr(0, pos);
+                
+                std::regex words_regex("[^&]+");
+                auto words_begin = std::sregex_iterator(data.begin(), data.end(), words_regex);
+                auto words_end = std::sregex_iterator();
+
+                for (std::sregex_iterator i = words_begin; i != words_end; ++i) 
+                {
+                    std::smatch match = *i;
+                    std::string match_str = match.str();
+                    if (match_str.substr(pos).find("=") != std::string::npos)
+                    {
+                        request_data[match_str.substr(0, match_str.find("="))] = match_str.substr(match_str.find("=") + 1);
+                    }
+                }
+            }
+            else
+            {
+                request_data["data"] = actions[actions.size() - 1];
+            }
             
             /* Go through the route, there will be multiple routes */
+            std::cout << "URL " << url << std::endl;
             for(const auto &routes : _routes)
             {
                 if ( (routes.first == url ) && (std::get<0>(routes.second) == method ) )
@@ -83,7 +114,7 @@ private:
                     HttpRequest request = HttpRequest();
                     HttpResponse response = HttpResponse();
                     response.set_client_socket(sockfd);
-                    request.set_request_data(payload);
+                    request.set_request_data(request_data);
                     function(request, response);
                 }
             }
