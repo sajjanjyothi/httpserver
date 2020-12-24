@@ -4,11 +4,8 @@
 #include "http_request.h"
 #include "http_response.h"
 
+#define SERVER_PORT 8085
 
-void call_back(const std::string &value )
-{
-    std::cout << "I got this from server\n" << value << std::endl;
-}
 int main()
 {
     ROUTE_MAP routes;
@@ -26,7 +23,7 @@ int main()
 
     try
     {
-        HttpServer server = HttpServer(8085);
+        HttpServer server = HttpServer(SERVER_PORT);
         server.set_route(routes);
         server.run_for_ever();
     }

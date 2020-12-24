@@ -10,7 +10,7 @@ HttpServer::HttpServer(int port=80)
         throw HttpException("Cannot create socket");
     }
 
-    if (setsockopt(_sock_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, 
+    if (setsockopt(_sock_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEADDR,
                                                     &opt, sizeof(opt))) 
     { 
         throw HttpException("Setting socket option failed");
