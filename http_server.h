@@ -59,7 +59,7 @@ private:
         std::vector<std::string>        actions;
 
         std::regex http_method("(?:GET|PUT|POST|DELETE)");
-        
+
         /* if any http method is there */
         if( std::regex_search(client_data, sm, http_method) )
         {
@@ -78,24 +78,24 @@ private:
             std::string                 data;
 
             stream>>method>>url;
+            std::cout << url << std::endl;
 
-            std::cout << url;
             if (int pos; (pos = url.find("?")) != std::string::npos)
             {
                 data = url.substr(pos+1);
                 url = url.substr(0, pos);
-                
+
                 std::regex words_regex("[^&]+");
                 auto words_begin = std::sregex_iterator(data.begin(), data.end(), words_regex);
                 auto words_end = std::sregex_iterator();
-
+                    
                 for (std::sregex_iterator i = words_begin; i != words_end; ++i) 
                 {
                     std::smatch match = *i;
                     std::string match_str = match.str();
-                    if (match_str.substr(pos).find("=") != std::string::npos)
+                    if (int match_pos; ( match_pos =  match_str.find("=") ) != std::string::npos)
                     {
-                        request_data[match_str.substr(0, match_str.find("="))] = match_str.substr(match_str.find("=") + 1);
+                        request_data[match_str.substr(0, match_pos)] = match_str.substr(match_pos + 1);
                     }
                 }
             }
@@ -105,7 +105,6 @@ private:
             }
             
             /* Go through the route, there will be multiple routes */
-            std::cout << "URL " << url << std::endl;
             for(const auto &routes : _routes)
             {
                 if ( (routes.first == url ) && (std::get<0>(routes.second) == method ) )
